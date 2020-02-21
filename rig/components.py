@@ -99,15 +99,19 @@ def _build2Unit(unit1, unit2, name=None):
     unit2['root'].setParent(root)
     print('Building switch attrs...')
     switchattrs = addWeightSwitch(root, unit1, unit2, defaultValue=1.0)
-    print(switchattrs)
+
     print('Creating visibility switch...')
     for switchattr, unit in zip(switchattrs, (unit2, unit1)):
         createVisibilitySwitch(switchattr, unit['controls'])
 
-    return {'name': name, 'root': root, 'units': (unit1, unit2)}
+    return {'name': name,
+            'root': root,
+            'units': (unit1, unit2),
+            'targets': tuple(t for t in unit1['targets'] if t in unit2['targets'])}
 
 
-componentbuilder = partial(builder, output_keys=('name', 'root', 'units'))
+componentbuilder = partial(builder, output_keys=(
+    'name', 'root', 'targets', 'units'))
 
 
 @componentbuilder(min_xforms=2, max_xforms=2)
@@ -138,10 +142,13 @@ def buildFkIkSpline(xforms, name=None):
 
     return _build2Unit(fkunit, ikunit, name='FkIk' + name)
 
+
 def buildFkIkSpine(xforms, name='Spine_M'):
     comp = buildFkIkSpline(xforms, name)
-    pm.pointConstraint(comp['units'][1]['controls'][0], comp['units'][1]['targets'][0], mo=True)
+    pm.pointConstraint(comp['units'][1]['controls'][0],
+                       comp['units'][1]['targets'][0], mo=True)
     return comp
+
 
 @componentbuilder(min_xforms=2)
 def buildFinger(xforms, name=None):
@@ -165,12 +172,74 @@ def buildFinger(xforms, name=None):
             'root': root,
             'units': (fkunit)}
 
+# asd
+
+
+PARENTS = {
+    'Clavicle': 'Chest_M',
+    'Arm': 'Clavicle',
+    'Thumb': 'Wrist',
+    'Index': 'Wrist',
+    'Middle': 'Wrist',
+    'Ring': 'Wrist',
+    'Pinky': 'Wrist',
+    'Leg': 'Pelvis_M'
+}
+
+JOINTS = {
+    'Clavicle': ('Scapula', 'Shoulder'),
+    'Arm': ('Shoulder', 'Elbow', 'Wrist'),
+    'Leg': ('Hip', 'Knee', 'Ankle'),
+    'Thumb': tuple('ThumbFinger{}'.format(i+1) for i in range(3)),
+    'Index': tuple('IndexFinger{}'.format(i+1) for i in range(3)),
+    'Middle': tuple('MiddleFinger{}'.format(i+1) for i in range(3)),
+    'Ring': tuple('RingFinger{}'.format(i+1) for i in range(3)),
+    'Pinky': tuple('PinkyFinger{}'.format(i+1) for i in range(3))
+}
+
+BUILDERS = {
+    'Clavicle': buildFkIkClavicle,
+    'Arm': buildFkIkLimb,
+    'Leg': buildFkIkLimb,
+    'Thumb': buildFinger,
+    'Index': buildFinger,
+    'Middle': buildFinger,
+    'Ring': buildFinger,
+    'Pinky': buildFinger
+}
+
 
 def buildAll():
-    
+    components = dict()
+    components['Spine'] = buildFkIkSpine(
+        ('Spine1_M', 'Spine2_M', 'Spine3_M', 'Chest_M'))
+
     for side in '_L', '_R':
-        buildFkIkLimb(pm.ls((j+side for j in ('Shoulder', 'Elbow', 'Wrist'))), name='Arm'+side)
-        buildFkIkLimb(pm.ls((j+side for j in ('Hip', 'Knee', 'Ankle'))), name='Leg'+side)
-        buildFkIkClavicle(pm.ls('Scapula'+side, 'Shoulder'+side))
-        for finger in 'Thumb', 'Index', 'Middle', 'Ring', 'Pinky':
-            buildFinger(pm.ls([finger+'Finger'+str(i+1)+'_L' for i in range(3)]))
+        for joint in JOINTS:
+            jname = joint+side
+            comp = BUILDERS[joint](JOINTS[joint], jname)
+
+            parjoint = PARENTS[joint] if PARENTS[joint].endswith(
+                '_M') else PARENTS[joint] + side
+            pm.parentConstraint(parjoint, comp['root'], mo=True)
+
+        # components['Clavicle' +
+        #            side] = buildFkIkClavicle(pm.ls('Scapula'+side, 'Shoulder'+side))
+        # pm.parentConstraint(
+        #     components['Spine']['targets'][-1], components['Clavicle'+side]['root'], mo=True)
+
+        # components['Arm'+side] = buildFkIkLimb(
+        #     pm.ls((j+side for j in ('Shoulder', 'Elbow', 'Wrist'))), name='Arm'+side)
+        # pm.parentConstraint(
+        #     components['Clavicle'+side]['targets'][-1], components['Arm'+side]['root'], mo=True)
+
+        # buildFkIkLimb(
+        #     pm.ls((j+side for j in ('Hip', 'Knee', 'Ankle'))), name='Leg'+side)
+        # pm.parentConstraint(
+        #     components['Spine']['targets'][0], components['Leg'+side]['root'], mo=True)
+
+        # for finger in 'Thumb', 'Index', 'Middle', 'Ring', 'Pinky':
+        #     fc = buildFinger(
+        #         pm.ls([finger+'Finger{0}{1}'.format(i+1, side) for i in range(3)]))
+        #     pm.parentConstraint(
+        #         components['Arm'+side]['targets'][-1], fc['root'], mo=True)
