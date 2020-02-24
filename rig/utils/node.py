@@ -57,7 +57,7 @@ def freezeOffset(xform):
     else:
         offset_matrix = xform.worldMatrix.get()
     xform.offsetParentMatrix.set(offset_matrix)
-    pm.makeIdentity(xform)
+    xform.setMatrix(pm.dt.Matrix())
 
 
 def constrainTargets(drivers, targets, constraint_func=pm.orientConstraint, maintainOffset=True):

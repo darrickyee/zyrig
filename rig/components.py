@@ -111,7 +111,7 @@ def _build2Unit(unit1, unit2, name=None):
 
 
 componentbuilder = partial(builder, output_keys=(
-    'name', 'root', 'targets', 'units'))
+    'name', 'root', 'units'))
 
 
 @componentbuilder(min_xforms=2, max_xforms=2)
@@ -177,7 +177,7 @@ def buildFinger(xforms, name=None):
 
 PARENTS = {
     'Clavicle': 'Chest_M',
-    'Arm': 'Clavicle',
+    'Arm': 'Scapula',
     'Thumb': 'Wrist',
     'Index': 'Wrist',
     'Middle': 'Wrist',
@@ -212,12 +212,12 @@ BUILDERS = {
 def buildAll():
     components = dict()
     components['Spine'] = buildFkIkSpine(
-        ('Spine1_M', 'Spine2_M', 'Spine3_M', 'Chest_M'))
+        ('Root_M', 'Spine1_M', 'Spine2_M', 'Spine3_M', 'Chest_M'))
 
     for side in '_L', '_R':
         for joint in JOINTS:
             jname = joint+side
-            comp = BUILDERS[joint](JOINTS[joint], jname)
+            comp = BUILDERS[joint]([jn+side for jn in JOINTS[joint]], jname)
 
             parjoint = PARENTS[joint] if PARENTS[joint].endswith(
                 '_M') else PARENTS[joint] + side
