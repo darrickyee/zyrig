@@ -133,7 +133,8 @@ def _setRootHierarchy(name, clusters, controls, curve, ikhandle, joints, **kwarg
         'name': name,
         'controls': controls,
         'joints': joints,
-        'root': root}) or kwargs
+        'root': root,
+        'ikhandle': ikhandle}) or kwargs
 
 
 def _makeCtrlConstraints(controls, joints, end_driver):
@@ -148,17 +149,28 @@ def _addWeightAttrs(attr_host, wtattrs):
     print("adding weight attrs...")
     print(wtattrs)
     for attr_name, wtattr in zip(('midWeight', 'endWeight'), wtattrs):
-        pm.addAttr(attr_host, ln=attr_name, at='float', minValue=0.0, maxValue=1.0, defaultValue=0.5, k=True)
+        pm.addAttr(attr_host, ln=attr_name, at='float', minValue=0.0,
+                   maxValue=1.0, defaultValue=0.5, k=True)
         pm.connectAttr(attr_host.attr(attr_name), wtattr[0], force=True)
 
 
-def _connectControls(controls, joints, **kwargs):
+def _addTwistControls(controls, ikhandle):
+    ikhandle.dTwistControlEnable.set(True)
+    ikhandle.dWorldUpType.set(4)
+    controls[0].worldMatrix[0].connect(ikhandle.dWorldUpMatrix)
+    controls[2].worldMatrix[0].connect(ikhandle.dWorldUpMatrixEnd)
+
+
+def _connectControls(controls, joints, ikhandle, **kwargs):
     end_driver = createNodeChain(joints[-1],
                                  name_list=[joints[-1].name()+'_drv'])[0]
     end_driver.setParent(joints[-1])
 
     _addWeightAttrs(controls[2], _makeCtrlConstraints(
         controls, joints, end_driver))
+
+    _addTwistControls(controls, ikhandle)
+
     print('Finishing connect controls...')
     return kwargs.update({
         'controls': controls,
@@ -171,10 +183,8 @@ def _connectControls(controls, joints, **kwargs):
 
 
 def _finalize(**kwargs):
-    # root = _setRootHierarchy(**kwargs)
 
     pm.select(None)
-    # kwargs['root'] = root
     kwargs['targets'] = kwargs['xforms']
 
     print('Returning Ik Spline unit...')

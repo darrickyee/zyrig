@@ -41,13 +41,13 @@ def makeLockXYZ(xf_name, unlock=False):
 def remapAttr(driver_attr, in_range=(0.0, 1.0), out_range=(0.0, 1.0)):
 
     driver_attr = pm.ls(driver_attr)[0]
-    driver_attr.setRange(in_range)
+    # driver_attr.setRange(in_range)
 
     if tuple(in_range) == tuple(out_range):
         return driver_attr
 
     remap_node = pm.createNode(
-        'remapValue', n='{}_remap1'.format(driver_attr.nodeName()))
+        'remapValue', n='{0}_{1}_remap1'.format(driver_attr.nodeName(), driver_attr.attrName(longName=True)))
     remap_node.inputMin.set(in_range[0])
     remap_node.inputMax.set(in_range[1])
 

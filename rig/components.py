@@ -172,8 +172,6 @@ def buildFinger(xforms, name=None):
             'root': root,
             'units': (fkunit)}
 
-# asd
-
 
 PARENTS = {
     'Clavicle': 'Chest_M',
@@ -223,23 +221,12 @@ def buildAll():
                 '_M') else PARENTS[joint] + side
             pm.parentConstraint(parjoint, comp['root'], mo=True)
 
-        # components['Clavicle' +
-        #            side] = buildFkIkClavicle(pm.ls('Scapula'+side, 'Shoulder'+side))
-        # pm.parentConstraint(
-        #     components['Spine']['targets'][-1], components['Clavicle'+side]['root'], mo=True)
-
-        # components['Arm'+side] = buildFkIkLimb(
-        #     pm.ls((j+side for j in ('Shoulder', 'Elbow', 'Wrist'))), name='Arm'+side)
-        # pm.parentConstraint(
-        #     components['Clavicle'+side]['targets'][-1], components['Arm'+side]['root'], mo=True)
-
-        # buildFkIkLimb(
-        #     pm.ls((j+side for j in ('Hip', 'Knee', 'Ankle'))), name='Leg'+side)
-        # pm.parentConstraint(
-        #     components['Spine']['targets'][0], components['Leg'+side]['root'], mo=True)
-
-        # for finger in 'Thumb', 'Index', 'Middle', 'Ring', 'Pinky':
-        #     fc = buildFinger(
-        #         pm.ls([finger+'Finger{0}{1}'.format(i+1, side) for i in range(3)]))
-        #     pm.parentConstraint(
-        #         components['Arm'+side]['targets'][-1], fc['root'], mo=True)
+# COM control - world orient
+# Super mover - world orient
+# Connect driver/weight attributes
+# Add eye controls
+# Add head, neck, jaw controls
+# Global head/neck control
+# Space switching
+# Parent arm/leg ik to global
+# Pose drivers
