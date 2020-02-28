@@ -74,3 +74,57 @@ def createPoseReader(target, rotation=None, name=None, outerRadius=90.0, innerRa
     pm.rotate(reader, rotation, r=True)
 
     pm.select(reader)
+
+    return reader
+
+
+JCMSALL = {'JCM_CollarUp_55_L': {},
+           'JCM_CollarUp_55_R': {},
+           'JCM_ForeArmFwd_135_L': {},
+           'JCM_ForeArmFwd_135_R': {},
+           'JCM_ForeArmFwd_75_L': {},
+           'JCM_ForeArmFwd_75_R': {},
+           'JCM_NeckBack_27': {},
+           'JCM_NeckFwd_35': {},
+           'JCM_ShinBend_155_L': {},
+           'JCM_ShinBend_155_R': {},
+           'JCM_ShinBend_90_L': {},
+           'JCM_ShinBend_90_R': {},
+           'JCM_ShldrDown_40_L': {},
+           'JCM_ShldrDown_40_R': {},
+           'JCM_ShldrFwd_110_L': {},
+           'JCM_ShldrFwd_110_R': {},
+           'JCM_ShldrUp_90_L': {},
+           'JCM_ShldrUp_90_R': {},
+           'JCM_ThighBack_35_L': {},
+           'JCM_ThighBack_35_R': {},
+           'JCM_ThighFwd_115_L': {},
+           'JCM_ThighFwd_115_R': {},
+           'JCM_ThighFwd_57_L': {},
+           'JCM_ThighFwd_57_R': {},
+           'JCM_ThighSide_85_L': {},
+           'JCM_ThighSide_85_R': {}}
+
+# createPoseReader()
+
+JCMS = {'JCM_CollarUp_55_L': {'target': 'Scapula_L', 'rotation': (0, -55, 0), 'outerRadius': 55},
+        'JCM_ForeArmFwd_135_L': {},
+        'JCM_ForeArmFwd_75_L': {},
+        'JCM_NeckBack_27': {},
+        'JCM_NeckFwd_35': {},
+        'JCM_ShinBend_155_L': {},
+        'JCM_ShinBend_90_L': {},
+        'JCM_ShldrDown_40_L': {},
+        'JCM_ShldrFwd_110_L': {},
+        'JCM_ShldrUp_90_L': {},
+        'JCM_ThighBack_35_L': {},
+        'JCM_ThighFwd_115_L': {},
+        'JCM_ThighFwd_57_L': {},
+        'JCM_ThighSide_85_L': {}}
+
+bshape = pm.ls('MorphsBody')[0]
+
+for morph, poseargs in JCMS.items():
+    if poseargs:
+        reader = createPoseReader(**poseargs)
+        reader.attr('poseWeight').connect(bshape.weight.attr(morph))

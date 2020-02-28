@@ -25,8 +25,13 @@ def buildUnit(xforms, name=None, **kwargs):
 
 def _buildControls(name, shape='IK', size=5.0, color=None, **kwargs):
 
-    return [createControlCurve(
+    ctrls = [createControlCurve(
         name='Ik_{}'.format(name), shape=shape, size=size, color=color)]
+
+    for ctrl in ctrls:
+        createOffset(ctrl)
+
+    return ctrls
 
 
 def _buildDrivers(name, xforms, controls, **kwargs):
@@ -39,10 +44,10 @@ def _buildDrivers(name, xforms, controls, **kwargs):
         pm.makeIdentity(joint, apply=True)
 
     # Place control curve
-    controls[0].setTransformation(xforms[-1].getMatrix(ws=True))
+    controls[0].getParent().setTransformation(xforms[-1].getMatrix(ws=True))
 
     if ctrl_orient:
-        pm.rotate(controls[0], ctrl_orient)
+        pm.rotate(controls[0].getParent(), ctrl_orient)
 
     # Create IK chain
     ik_handle, _ = pm.ikHandle(n="Ik_{}_handle".format(name),
@@ -62,10 +67,8 @@ def _buildDrivers(name, xforms, controls, **kwargs):
 def _finalize(name, unit_type, controls, drivers, xforms, **kwargs):
 
     root = createOffset(drivers[0], name='Ik_{}_GRP'.format(name))
-    for node in drivers[0], controls[0]:
+    for node in drivers[0], controls[0].getParent():
         node.setParent(root)
-    
-    freezeOffset(controls[0])
 
     return {'name': name,
             'unit_type': unit_type,

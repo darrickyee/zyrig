@@ -119,7 +119,9 @@ def buildFkIkClavicle(xforms, name=None):
     name = name or xforms[0].nodeName()
     fkunit = getBuilder('fkchain')(xforms[0], name)
     ikunit = getBuilder('ikchain')(xforms, name,
-                                   ctrl_orient=xforms[0].getRotation(space='world'))
+                                   ctrl_orient=xforms[0].getRotation(
+                                       space='world'),
+                                   size=8.0)
 
     return _build2Unit(fkunit, ikunit, name='FkIk' + name)
 
@@ -128,8 +130,8 @@ def buildFkIkClavicle(xforms, name=None):
 def buildFkIkLimb(xforms, name=None):
     print('Building FkIkLimb component:')
     name = name or xforms[0].nodeName()
-    fkunit = getBuilder('fkchain')(xforms, name)
-    ikunit = getBuilder('ik2bone')(xforms, name)
+    fkunit = getBuilder('fkchain')(xforms, name, size=8.0)
+    ikunit = getBuilder('ik2bone')(xforms, name, size=6.0)
 
     return _build2Unit(fkunit, ikunit, name='FkIk' + name)
 

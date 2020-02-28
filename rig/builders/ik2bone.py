@@ -23,9 +23,11 @@ def buildUnit(xforms, name=None, **kwargs):
     return _finalize(**unit)
 
 
-def _buildControls(name, xforms, controls, pole_shape='Pole', polesize=2.0, color=None, **kwargs):
+def _buildControls(name, xforms, controls, pole_shape='Pole', polesize=3.0, color=None, **kwargs):
     pole = createControlCurve(name='Pv_{}'.format(
         name), shape=pole_shape, size=polesize, color=color)
+
+    createOffset(pole)
 
     crv = createConnectorCurve((xforms[1], pole), parent=controls[0])
 
@@ -36,7 +38,7 @@ def _buildControls(name, xforms, controls, pole_shape='Pole', polesize=2.0, colo
 
 def _buildDrivers(xforms, controls, root, drivers, pole_offset=50.0, **kwargs):
     # Position pole vector control
-    pole_xf = controls[1]
+    pole_xf = controls[1].getParent()
     pole_xf.setTranslation(xforms[1].getTranslation(
         space='world') + getPoleVector(*xforms).normal()*pole_offset, space='world')
 
@@ -49,8 +51,7 @@ def _buildDrivers(xforms, controls, root, drivers, pole_offset=50.0, **kwargs):
 
 def _finalize(name, unit_type, controls, drivers, xforms, root, **kwargs):
 
-    controls[1].setParent(root)
-    freezeOffset(controls[1])
+    controls[1].getParent().setParent(root)
 
     pm.select(None)
 

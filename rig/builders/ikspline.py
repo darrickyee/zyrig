@@ -127,7 +127,7 @@ def _setRootHierarchy(name, clusters, controls, curve, ikhandle, joints, **kwarg
     curve.setTransformation(pm.datatypes.Matrix())
 
     for ctrl in controls:
-        freezeOffset(ctrl)
+        createOffset(ctrl)
 
     return kwargs.update({
         'name': name,
@@ -139,19 +139,17 @@ def _setRootHierarchy(name, clusters, controls, curve, ikhandle, joints, **kwarg
 
 def _makeCtrlConstraints(controls, joints, end_driver):
     # Create mid-control constraint
-    mid = synthConstraint((controls[0], controls[2]), controls[1])
+    mid = pm.parentConstraint(
+        (controls[0], controls[2]), controls[1].getParent(), mo=True)
     # Create end-driver constraint
-    end = synthConstraint((joints[-1], controls[2]), end_driver)
+    end = pm.parentConstraint((joints[-1], controls[2]), end_driver, mo=True)
     return (mid, end)
 
 
-def _addWeightAttrs(attr_host, wtattrs):
-    print("adding weight attrs...")
-    print(wtattrs)
-    for attr_name, wtattr in zip(('midWeight', 'endWeight'), wtattrs):
-        pm.addAttr(attr_host, ln=attr_name, at='float', minValue=0.0,
-                   maxValue=1.0, defaultValue=0.5, k=True)
-        pm.connectAttr(attr_host.attr(attr_name), wtattr[0], force=True)
+def _addWeightAttrs(attr_host, constraints):
+    print(constraints)
+    for attr_name, constraint in zip(('midWeight', 'endWeight'), constraints):
+        addWeightAttrs(attr_host, attr_name, [constraint], defaultValue=0.5)
 
 
 def _addTwistControls(controls, ikhandle):
