@@ -51,15 +51,6 @@ def synthConstraint(drivers, target):
     return weights
 
 
-def freezeOffset(xform):
-    if xform.getParent():
-        offset_matrix = xform.worldMatrix.get()*xform.getParent().worldInverseMatrix.get()
-    else:
-        offset_matrix = xform.worldMatrix.get()
-    xform.offsetParentMatrix.set(offset_matrix)
-    xform.setMatrix(pm.dt.Matrix())
-
-
 def constrainTargets(drivers, targets, constraint_func=pm.orientConstraint, maintainOffset=True):
     print('Constraining targets...')
     drivers = tuple(drivers)

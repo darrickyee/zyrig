@@ -1,6 +1,6 @@
 import pymel.core as pm
 
-from ..utils import createControlCurve, createOffset, getPoleVector, createConnectorCurve, freezeOffset
+from ..utils import createControlCurve, createOffset, getPoleVector, createConnectorCurve
 from .base import builder
 from .ikchain import buildUnit as buildIkChain
 

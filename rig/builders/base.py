@@ -49,15 +49,3 @@ def builder(min_xforms=1, max_xforms=10, output_keys=('name', 'unit_type',  'roo
         return builderWrapper
 
     return builderDecorator
-
-
-def nodeSet(name):
-    objset = pm.ls(name)[0] if pm.ls(name) else None
-
-    if not objset:
-        objset = pm.sets(None, name=name, empty=True)
-
-    if isinstance(objset, pm.nt.ObjectSet):
-        return objset
-
-    return None

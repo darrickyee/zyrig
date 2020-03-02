@@ -1,4 +1,4 @@
-from ..utils import createControlCurve, createOffset, freezeOffset
+from ..utils import createControlCurve, createOffset
 from .base import builder
 
 

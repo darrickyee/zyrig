@@ -1,6 +1,6 @@
 import pymel.core as pm
 
-from ..utils import createNodeChain, freezeOffset, remapAttr
+from ..utils import createNodeChain, createOffset, remapAttr
 from .base import builder
 
 # TODO: Figure out if controls are needed? (Toe curl?)
@@ -39,6 +39,7 @@ def _buildDrivers(name, xforms, **kwargs):
     ball_pivot = createNodeChain(ball, name_list=[ball.name()+'_pivot'])[0]
     ball_roll = createNodeChain(ball, name_list=[ball.name()+'_roll'])[0]
 
+    aimAxis(heel, toe)
     alignAxis(heel, axis='y', target_axis=(0, 1, 0))
     alignAxis(ball_pivot, axis='y', target_axis=(0, 1, 0))
 
@@ -51,7 +52,7 @@ def _buildDrivers(name, xforms, **kwargs):
     heel.setParent(root)
 
     for xform in root.listRelatives(ad=True, type='transform'):
-        freezeOffset(xform)
+        createOffset(xform)
 
     return kwargs.update({
         'name': name,

@@ -62,6 +62,7 @@ def createPoseReader(target, rotation=None, name=None, outerRadius=90.0, innerRa
     # Create reader attributes
     pm.addAttr(reader, ln='outerRadius', at='float',
                maxValue=180.0, defaultValue=90.0, k=True)
+
     pm.addAttr(reader, ln='innerRadius', at='float', maxValue=180.0, k=True)
     pm.addAttr(reader, ln='poseWeight', at='float', k=True)
 
@@ -71,7 +72,9 @@ def createPoseReader(target, rotation=None, name=None, outerRadius=90.0, innerRa
     pm.connectAttr(reader.innerRadius, rv.inputMin)
     pm.connectAttr(rv.outValue, reader.poseWeight)
 
-    # Rotate & set reader radius
+    # Rotate
+    reader.outerRadius.set(outerRadius)
+    reader.innerRadius.set(innerRadius)
     reader.outerRadius.set(pm.dt.Vector(rotation).length())
     pm.rotate(reader, rotation, r=True)
 

@@ -183,7 +183,8 @@ PARENTS = {
     'Middle': 'Wrist',
     'Ring': 'Wrist',
     'Pinky': 'Wrist',
-    'Leg': 'Pelvis_M'
+    'Leg': 'Pelvis_M',
+    'Foot': 'Ankle'
 }
 
 JOINTS = {
@@ -243,12 +244,10 @@ def buildAll():
             ctrlset.addMembers(unit['controls'])
 
 
-# COM control - world orient
-# Super mover - world orient
 # Connect driver/weight attributes
 # Add eye controls
 # Add head, neck, jaw controls
 # Global head/neck control
 # Space switching
-# Parent arm/leg ik to global
+# Parent-space transforms?
 # Pose drivers

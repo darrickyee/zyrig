@@ -2,7 +2,7 @@ from functools import partial, reduce
 
 import pymel.core as pm
 
-from ..utils import addWeightAttrs, createControlCurve, createNodeChain, createOffset, freezeOffset, synthConstraint
+from ..utils import addWeightAttrs, createControlCurve, createNodeChain, createOffset
 from .base import builder
 
 

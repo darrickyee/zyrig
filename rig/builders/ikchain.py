@@ -2,7 +2,7 @@ from functools import partial
 
 import pymel.core as pm
 
-from ..utils import createControlCurve, createNodeChain, createOffset, freezeOffset
+from ..utils import createControlCurve, createNodeChain, createOffset
 # from ..classes import RigUnit
 from .base import builder
 
