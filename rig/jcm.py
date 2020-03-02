@@ -32,13 +32,15 @@ def createPoseReader(target, rotation=None, name=None, outerRadius=90.0, innerRa
     reader.overrideColor.set(3)
 
     # Position reader on target
-    mult = pm.createNode('multMatrix', name=name+'_OFFSET')
-    mult.matrixIn[0].set(target.xformMatrix.get())
+    offset = pm.createNode('transform', name='{}_offset'.format(reader.name()))
+    offset.setMatrix(target.getMatrix(ws=True), ws=True)
+    reader.setParent(offset)
+    reader.setMatrix(pm.dt.Matrix())
+
     # Parent reader if target has parent
     parent = target.getParent()
     if parent:
-        pm.connectAttr(parent.worldMatrix, mult.matrixIn[1])
-    pm.connectAttr(mult.matrixSum, reader.offsetParentMatrix)
+        pm.parentConstraint(parent, offset, mo=True)
 
     # Create vectorProduct and angleBetween nodes
     ab = pm.createNode('angleBetween', name=name+'_ANGLE')
@@ -128,3 +130,9 @@ for morph, poseargs in JCMS.items():
     if poseargs:
         reader = createPoseReader(**poseargs)
         reader.attr('poseWeight').connect(bshape.weight.attr(morph))
+        if morph.endswith('_L'):
+            morphr = morph.replace('_L', '_R')
+            poseargsr = poseargs.copy()
+            poseargsr['target'] = poseargs['target'].replace('_L', '_R')
+            reader = createPoseReader(**poseargsr)
+            reader.attr('poseWeight').connect(bshape.weight.attr(morphr))

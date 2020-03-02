@@ -51,7 +51,7 @@ def _buildDrivers(xforms, controls, root, drivers, pole_offset=50.0, **kwargs):
 
 def _finalize(name, unit_type, controls, drivers, xforms, root, **kwargs):
 
-    controls[1].getParent().setParent(root)
+    controls[1].getParent().setParent(controls[0])
 
     pm.select(None)
 

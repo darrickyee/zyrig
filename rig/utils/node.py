@@ -124,7 +124,8 @@ def createControlCurve(name=None,
 
     if name:
         shape_args.update({'name': name})
-        color = CONTROL_COLORS.get(name[-2:].lower(), None)
+        if not color:
+            color = CONTROL_COLORS.get(name[-2:].lower(), None)
 
     crv = pm.curve(**shape_args)
 

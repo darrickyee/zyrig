@@ -1,7 +1,7 @@
 from functools import partial
 import pymel.core as pm
 from .builders import builder, getBuilder
-from .utils import addWeightAttrs, connectAttrMulti, constrainTargets, createOffset, createVisibilitySwitch, remapAttr, synthConstraint
+from .utils import addWeightAttrs, connectAttrMulti, constrainTargets, createOffset, createVisibilitySwitch, remapAttr, synthConstraint, createControlCurve
 
 AS5_MAP = {'Ankle_L': 'Ankle_L',
            'Ankle_R': 'Ankle_R',
@@ -161,10 +161,10 @@ def buildFinger(xforms, name=None):
     pm.rename(root, root.name().replace('GRP', 'ROOT'))
 
     # Create curl
-    pm.addAttr(root, ln='Curl', at='float', minValue=-1.0,
+    pm.addAttr(root, ln='Curl', at='float', minValue=-0.5,
                maxValue=1.0, defaultValue=0.0, k=True)
 
-    drvattr = remapAttr(root.attr('Curl'), out_range=(0.0, 90.0))
+    drvattr = remapAttr(root.attr('Curl'), in_range=(-0.5, 1.0), out_range=(-45.0, 90.0))
 
     connectAttrMulti(drvattr, [xf.ry for xf in fkunit['drivers']])
 
@@ -172,7 +172,7 @@ def buildFinger(xforms, name=None):
 
     return {'name': name,
             'root': root,
-            'units': (fkunit)}
+            'units': [fkunit]}
 
 
 PARENTS = {
@@ -210,18 +210,38 @@ BUILDERS = {
 
 
 def buildAll():
+
     components = dict()
     components['Spine'] = buildFkIkSpine(
         ('Root_M', 'Spine1_M', 'Spine2_M', 'Spine3_M', 'Chest_M'))
+    main = createControlCurve(name='Main', size=40.0, color=(.15, 1, 1))
+    pm.rotate(main, (0, 0, 90))
+    pm.makeIdentity(main, apply=True)
+    com = createControlCurve(name='CTRL_COM_M', shape='com',
+                             size=60.0)
+    com.setMatrix(components['Spine']['root'].getMatrix(ws=True), ws=True)
+    createOffset(com)
+    com.getParent().setParent(main)
 
     for side in '_L', '_R':
         for joint in JOINTS:
             jname = joint+side
             comp = BUILDERS[joint]([jn+side for jn in JOINTS[joint]], jname)
+            components[jname] = comp
 
             parjoint = PARENTS[joint] if PARENTS[joint].endswith(
                 '_M') else PARENTS[joint] + side
             pm.parentConstraint(parjoint, comp['root'], mo=True)
+
+    pm.select(None)
+    ctrlset = pm.sets(name='ControlSet')
+
+    for component in components.values():
+        component['root'].setParent(com)
+        for unit in component['units']:
+            print(unit['controls'])
+            ctrlset.addMembers(unit['controls'])
+
 
 # COM control - world orient
 # Super mover - world orient
