@@ -1,7 +1,7 @@
 from functools import partial
 import pymel.core as pm
 from .builders import builder, getBuilder
-from .utils import addWeightAttrs, connectAttrMulti, constrainTargets, createOffset, createVisibilitySwitch, remapAttr, synthConstraint, createControlCurve
+from .utils import addWeightAttrs, connectAttrMulti, constrainTargets, createOffset, createVisibilitySwitch, remapAttr, createControlCurve
 
 AS5_MAP = {'Ankle_L': 'Ankle_L',
            'Ankle_R': 'Ankle_R',
@@ -164,7 +164,8 @@ def buildFinger(xforms, name=None):
     pm.addAttr(root, ln='Curl', at='float', minValue=-0.5,
                maxValue=1.0, defaultValue=0.0, k=True)
 
-    drvattr = remapAttr(root.attr('Curl'), in_range=(-0.5, 1.0), out_range=(-45.0, 90.0))
+    drvattr = remapAttr(root.attr('Curl'), in_range=(-0.5,
+                                                     1.0), out_range=(-45.0, 90.0))
 
     connectAttrMulti(drvattr, [xf.ry for xf in fkunit['drivers']])
 
