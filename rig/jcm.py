@@ -113,19 +113,19 @@ JCMSALL = {'JCM_CollarUp_55_L': {},
 # createPoseReader()
 
 JCMS = {'JCM_CollarUp_55_L': {'target': 'Scapula_L', 'rotation': (0, -55, 0), 'outerRadius': 55},
-        'JCM_ForeArmFwd_135_L': {},
-        'JCM_ForeArmFwd_75_L': {},
-        'JCM_NeckBack_27': {},
-        'JCM_NeckFwd_35': {},
-        'JCM_ShinBend_155_L': {},
-        'JCM_ShinBend_90_L': {},
-        'JCM_ShldrDown_40_L': {},
-        'JCM_ShldrFwd_110_L': {},
-        'JCM_ShldrUp_90_L': {},
-        'JCM_ThighBack_35_L': {},
-        'JCM_ThighFwd_115_L': {},
-        'JCM_ThighFwd_57_L': {},
-        'JCM_ThighSide_85_L': {}}
+        'JCM_ForeArmFwd_135_L': {'target': 'Elbow_L', 'rotation': (0, 0, 135), 'outerRadius': 60},
+        'JCM_ForeArmFwd_75_L': {'target': 'Elbow_L', 'rotation': (0, 0, 135), 'outerRadius': 135, 'innerRadius': 60},
+        'JCM_NeckBack_27': {'target': 'Neck_M', 'rotation': (0, 0, -35), 'outerRadius': 35, 'innerRadius': 8},
+        'JCM_NeckFwd_35': {'target': 'Neck_M', 'rotation': (0, 0, 35), 'outerRadius': 35},
+        'JCM_ShinBend_155_L': {'target': 'Knee_L', 'rotation': (0, 0, -155), 'outerRadius': 65},
+        'JCM_ShinBend_90_L': {'target': 'Knee_L', 'rotation': (0, 0, -155), 'outerRadius': 155, 'innerRadius': 65},
+        'JCM_ShldrDown_40_L': {'target': 'Shoulder_L', 'rotation': (0, 40, 0), 'outerRadius': 40},
+        'JCM_ShldrFwd_110_L': {'target': 'Shoulder_L', 'rotation': (0, 0, 110), 'outerRadius': 110},
+        'JCM_ShldrUp_90_L': {'target': 'Shoulder_L', 'rotation': (0, -90, 0), 'outerRadius': 90},
+        'JCM_ThighBack_35_L': {'target': 'Hip_L', 'rotation': (0, 0, -35), 'outerRadius': 35},
+        'JCM_ThighFwd_115_L': {'target': 'Hip_L', 'rotation': (0, 0, 135), 'outerRadius': 78},
+        'JCM_ThighFwd_57_L': {'target': 'Hip_L', 'rotation': (0, 0, 135), 'outerRadius': 135, 'innerRadius': 78},
+        'JCM_ThighSide_85_L': {'target': 'Hip_L', 'rotation': (0, -85, 0), 'outerRadius': 85}}
 
 bshape = pm.ls('MorphsBody')[0]
 

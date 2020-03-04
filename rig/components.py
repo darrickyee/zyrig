@@ -176,6 +176,14 @@ def buildFinger(xforms, name=None):
             'units': [fkunit]}
 
 
+@componentbuilder(min_xforms=4, max_xforms=4)
+def buildFoot(xforms, name=None):
+    name = name or xforms[0].nodeName()
+    # Toe ball fk control
+    fkunit = getBuilder('fkchain')(xforms[1])
+    ikunit = getBuilder('revfoot')(xforms, name)
+
+
 PARENTS = {
     'Clavicle': 'Chest_M',
     'Arm': 'Scapula',
