@@ -1,5 +1,5 @@
 import pymel.core as pm
-from .utils import connectAttrMulti, createControlCurve, createNodeChain, createOffset, setColor
+from .utils import connectAttrMulti, createControlCurve, createNodeChain, createOffset, setColor, remapAttr
 from .builders import getBuilder
 from .components import buildFinger, buildFkIkClavicle, buildFkIkLimb, buildFkIkSpine, buildFoot
 
@@ -39,6 +39,17 @@ BUILDERS = {
 }
 
 
+def buildArm(arm, fingers):
+    ctrl = arm['units'][1]['controls'][0]
+    for finger in fingers:
+        root = finger['root']
+        name = finger['name'].split('_')[0].replace('Finger', '')
+        pm.addAttr(ctrl, ln=name+'Curl', at='float', minValue=0.0,
+                   maxValue=10.0, defaultValue=0.0, k=True)
+        rv = remapAttr(ctrl.attr(name+'Curl'), in_range=(0.0, 10.0))
+        pm.connectAttr(rv, root.attr('curl'))
+
+
 def build():
 
     components = dict()
@@ -72,6 +83,7 @@ def build():
             print(unit['controls'])
             ctrlset.addMembers(unit['controls'])
 
+    return components
 
 # Connect driver/weight attributes
 # Add eye controls

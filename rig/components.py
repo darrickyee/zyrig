@@ -161,10 +161,10 @@ def buildFinger(xforms, name=None):
     pm.rename(root, root.name().replace('GRP', 'ROOT'))
 
     # Create curl
-    pm.addAttr(root, ln='Curl', at='float', minValue=-0.5,
+    pm.addAttr(root, ln='curl', at='float', minValue=-0.5,
                maxValue=1.0, defaultValue=0.0, k=True)
 
-    drvattr = remapAttr(root.attr('Curl'), in_range=(-0.5,
+    drvattr = remapAttr(root.attr('curl'), in_range=(-0.5,
                                                      1.0), out_range=(-45.0, 90.0))
 
     connectAttrMulti(drvattr, [xf.ry for xf in fkunit['drivers']])
