@@ -114,6 +114,17 @@ componentbuilder = partial(builder, output_keys=(
     'name', 'root', 'units'))
 
 
+@componentbuilder()
+def buildFkChain(xforms, name=None):
+    name = name or xforms[0].nodeName()
+    unit = getBuilder('fkchain')(xforms[0], name)
+    attachUnits(unit)
+    return {'name': name,
+            'root': unit['root'],
+            'units': [unit],
+            'targets': unit['targets']}
+
+
 @componentbuilder(min_xforms=2, max_xforms=2)
 def buildFkIkClavicle(xforms, name=None):
     name = name or xforms[0].nodeName()
@@ -160,20 +171,33 @@ def buildFinger(xforms, name=None):
     root = fkunit['root']
     pm.rename(root, root.name().replace('GRP', 'ROOT'))
 
-    # Create curl
-    pm.addAttr(root, ln='curl', at='float', minValue=-0.5,
-               maxValue=1.0, defaultValue=0.0, k=True)
+    # Create driver offset transforms
+    drvoffsets = [createOffset(drv, name=drv.nodeName()+'_DRV')
+                  for drv in fkunit['drivers']]
 
-    drvattr = remapAttr(root.attr('curl'), in_range=(-0.5,
-                                                     1.0), out_range=(-45.0, 90.0))
+    # Attributes, multiplier for curl & spread
+    mult = pm.createNode('multiplyDivide', name=name+'_DRV_MULT')
+    for atname, tgtattr in zip(('curl', 'spread'), ('X', 'Y')):
+        pm.addAttr(root, ln=atname, at='float', minValue=-0.5,
+                   maxValue=1.0, defaultValue=0.0, k=True)
+        pm.addAttr(root, ln=atname+'Amt', at='float', defaultValue=0.0, k=True)
+        pm.connectAttr(root.attr(atname), mult.attr('input1'+tgtattr))
+        pm.connectAttr(root.attr(atname+'Amt'), mult.attr('input2'+tgtattr))
 
-    connectAttrMulti(drvattr, [xf.ry for xf in fkunit['drivers']])
+    # Connect curl, spread
+    connectAttrMulti(mult.outputX, [xf.ry for xf in drvoffsets])
+    pm.connectAttr(mult.outputY, drvoffsets[0].rz)
+
+    # Set default curl, spread factors
+    root.curlAmt.set(90.0)
+    root.spreadAmt.set(30.0)
 
     attachUnits(fkunit)
 
     return {'name': name,
             'root': root,
-            'units': [fkunit]}
+            'units': [fkunit],
+            'targets': fkunit['targets']}
 
 
 @componentbuilder(min_xforms=4, max_xforms=4)
