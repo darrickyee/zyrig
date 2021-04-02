@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Program Files\\Autodesk\\Maya2018\\bin\\mayapy.exe"
+    "python.pythonPath": "c:\\Program Files\\Autodesk\\Maya2020\\bin\\mayapy.exe",
+    "python.analysis.extraPaths": ["C:\\Users\\Darrick\\Documents\\maya\\2020\\devkit\\pymel\\extras\\completion\\py"]
 }
